@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../database/database_helper.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddRecordScreen extends StatefulWidget {
   final Map<String, dynamic>? customer;
@@ -22,6 +24,20 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   final TextEditingController priceController = TextEditingController();
 
   final TextEditingController dateController = TextEditingController();
+
+  File? selectedImage;
+
+  Future<void> pickImageFromGallery() async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        selectedImage = File(image.path);
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -131,7 +147,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                   height: 120,
 
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: pickImageFromGallery,
 
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -139,14 +155,24 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       ),
                     ),
 
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.add_a_photo, size: 35),
-                        SizedBox(height: 8),
-                        Text("Upload Photo"),
-                      ],
-                    ),
+                    child: selectedImage == null
+                        ? const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add_a_photo, size: 35),
+                              SizedBox(height: 8),
+                              Text("Upload Photo"),
+                            ],
+                          )
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.file(
+                              selectedImage!,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
+                          ),
                   ),
                 ),
               ],
