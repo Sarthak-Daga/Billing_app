@@ -290,8 +290,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       const SnackBar(content: Text("Record Updated")),
                     );
                   }
-
-                  Navigator.pop(context, true);
                 },
 
                 style: ElevatedButton.styleFrom(
