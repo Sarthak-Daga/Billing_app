@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../database/database_helper.dart';
 import 'add_record_screen.dart';
+import 'package:billing_app/screens/full_image_screen.dart';
 
 class DetailsScreen extends StatelessWidget {
   final Map<String, dynamic> customer;
@@ -44,6 +46,43 @@ class DetailsScreen extends StatelessWidget {
                 ),
               ],
             ),
+
+            const SizedBox(height: 20),
+            if (customer['photoPath'] != null && customer['photoPath'] != '')
+              Card(
+                elevation: 2,
+
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => FullImageScreen(
+                              imagePath: customer['photoPath'],
+                            ),
+                          ),
+                        );
+                      },
+                      child: Image.file(
+                        File(customer['photoPath']),
+                        height: 250,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
 
             const SizedBox(height: 20),
 

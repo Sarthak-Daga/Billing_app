@@ -24,7 +24,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   final TextEditingController priceController = TextEditingController();
 
   final TextEditingController dateController = TextEditingController();
-
+  String? savedImagePath;
   File? selectedImage;
 
   Future<void> pickImageFromGallery() async {
@@ -35,6 +35,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     if (image != null) {
       setState(() {
         selectedImage = File(image.path);
+        savedImagePath = image.path;
       });
     }
   }
@@ -54,6 +55,13 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
       priceController.text = widget.customer!['purchasePrice'];
 
       dateController.text = widget.customer!['purchaseDate'];
+
+      if (widget.customer!['photoPath'] != null &&
+          widget.customer!['photoPath'].toString().isNotEmpty) {
+        selectedImage = File(widget.customer!['photoPath']);
+
+        savedImagePath = widget.customer!['photoPath'];
+      }
     } else {
       final now = DateTime.now();
 
@@ -286,7 +294,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
 
                       'purchasePrice': priceController.text,
 
-                      'photoPath': '',
+                      'photoPath': savedImagePath ?? '',
                     });
                     Navigator.pop(context, false);
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -308,7 +316,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
 
                       'purchasePrice': priceController.text,
 
-                      'photoPath': widget.customer!['photoPath'],
+                      'photoPath':
+                          savedImagePath ?? widget.customer!['photoPath'],
                     });
                     Navigator.pop(context, true);
 
