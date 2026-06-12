@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import '../database/database_helper.dart';
 import 'package:image_picker/image_picker.dart';
+import '../services/image_service.dart';
 
 class AddRecordScreen extends StatefulWidget {
   final Map<String, dynamic>? customer;
@@ -33,9 +34,20 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      setState(() {
-        selectedImage = File(image.path);
-        savedImagePath = image.path;
+      setState(() async {
+        final String? compressedPath = await ImageService.compressAndSaveImage(
+          image.path,
+        );
+
+        if (compressedPath != null) {
+          setState(() {
+            selectedImage = File(compressedPath);
+
+            savedImagePath = compressedPath;
+            print(savedImagePath);
+            print(File(compressedPath).lengthSync());
+          });
+        }
       });
     }
   }
