@@ -28,6 +28,64 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   String? savedImagePath;
   File? selectedImage;
 
+  Future<void> showImagePickerOptions() async {
+    showModalBottomSheet(
+      context: context,
+
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+
+                title: const Text("Camera"),
+
+                onTap: () {
+                  Navigator.pop(context);
+
+                  pickImageFromCamera();
+                },
+              ),
+
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+
+                title: const Text("Gallery"),
+
+                onTap: () {
+                  Navigator.pop(context);
+
+                  pickImageFromGallery();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> pickImageFromCamera() async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? image = await picker.pickImage(source: ImageSource.camera);
+
+    if (image != null) {
+      final String? compressedPath = await ImageService.compressAndSaveImage(
+        image.path,
+      );
+
+      if (compressedPath != null) {
+        setState(() {
+          selectedImage = File(compressedPath);
+
+          savedImagePath = compressedPath;
+        });
+      }
+    }
+  }
+
   Future<void> pickImageFromGallery() async {
     final ImagePicker picker = ImagePicker();
 
@@ -167,7 +225,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                   height: 120,
 
                   child: OutlinedButton(
-                    onPressed: pickImageFromGallery,
+                    onPressed: showImagePickerOptions,
 
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
