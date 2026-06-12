@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../database/database_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/image_service.dart';
+import 'package:billing_app/screens/imei_scanner_screen.dart';
 
 class AddRecordScreen extends StatefulWidget {
   final Map<String, dynamic>? customer;
@@ -27,6 +28,20 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   final TextEditingController dateController = TextEditingController();
   String? savedImagePath;
   File? selectedImage;
+
+  Future<void> scanImei() async {
+    final result = await Navigator.push(
+      context,
+
+      MaterialPageRoute(builder: (_) => const ImeiScannerScreen()),
+    );
+
+    if (result != null) {
+      setState(() {
+        imeiController.text = result.toString();
+      });
+    }
+  }
 
   Future<void> showImagePickerOptions() async {
     showModalBottomSheet(
@@ -92,21 +107,16 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      setState(() async {
-        final String? compressedPath = await ImageService.compressAndSaveImage(
-          image.path,
-        );
+      final String? compressedPath = await ImageService.compressAndSaveImage(
+        image.path,
+      );
 
-        if (compressedPath != null) {
-          setState(() {
-            selectedImage = File(compressedPath);
-
-            savedImagePath = compressedPath;
-            print(savedImagePath);
-            print(File(compressedPath).lengthSync());
-          });
-        }
-      });
+      if (compressedPath != null) {
+        setState(() {
+          selectedImage = File(compressedPath);
+          savedImagePath = compressedPath;
+        });
+      }
     }
   }
 
@@ -275,17 +285,46 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
 
                 const SizedBox(height: 15),
 
-                TextField(
-                  controller: imeiController,
-                  keyboardType: TextInputType.number,
-                  maxLength: 15,
-                  decoration: InputDecoration(
-                    labelText: "IMEI Number",
-                    prefixIcon: const Icon(Icons.numbers),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: imeiController,
+                        keyboardType: TextInputType.number,
+                        maxLength: 15,
+
+                        decoration: InputDecoration(
+                          labelText: "IMEI Number",
+                          prefixIcon: const Icon(Icons.numbers),
+
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+
+                    const SizedBox(width: 10),
+
+                    Container(
+                      height: 60,
+                      width: 60,
+
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2563EB),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.qr_code_scanner,
+                          color: Colors.white,
+                        ),
+
+                        onPressed: scanImei,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
