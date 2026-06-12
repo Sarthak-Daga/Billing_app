@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:billing_app/screens/add_record_screen.dart';
 import 'package:billing_app/screens/search_screen.dart';
+import 'package:billing_app/screens/buy_old_device_screen.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
@@ -100,7 +101,7 @@ class Dashboard extends StatelessWidget {
                       Icon(Icons.add_circle_outline, size: 30),
                       SizedBox(width: 15),
                       Text(
-                        "Add New Device",
+                        "Add New Record",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
@@ -111,6 +112,44 @@ class Dashboard extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 25),
+
+            SizedBox(
+              width: double.infinity,
+              height: 80,
+              child: Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BuyOldDeviceScreen(),
+                      ),
+                    );
+                  },
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.recycling, size: 30),
+                      SizedBox(width: 15),
+                      Text(
+                        "Buy Old Device",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 25),
           ],
         ),
       ),
