@@ -7,6 +7,13 @@ class Customer {
   final String purchaseDate;
   final String purchasePrice;
   final String? photoPath;
+  final String? notes;
+  final String deviceType;
+  final String status;
+  final String? soldTo;
+  final String? soldMobile;
+  final String? sellingPrice;
+  final String? soldDate;
 
   Customer({
     this.id,
@@ -17,6 +24,13 @@ class Customer {
     required this.purchaseDate,
     required this.purchasePrice,
     this.photoPath,
+    this.notes,
+    this.deviceType = "NEW",
+    this.status = "AVAILABLE",
+    this.soldTo,
+    this.soldMobile,
+    this.sellingPrice,
+    this.soldDate,
   });
 
   Map<String, dynamic> toMap() {
@@ -29,6 +43,13 @@ class Customer {
       'purchaseDate': purchaseDate,
       'purchasePrice': purchasePrice,
       'photoPath': photoPath,
+      'notes': notes,
+      'deviceType': deviceType,
+      'status': status,
+      'soldTo': soldTo,
+      'soldMobile': soldMobile,
+      'sellingPrice': sellingPrice,
+      'soldDate': soldDate,
     };
   }
 
@@ -42,6 +63,13 @@ class Customer {
       purchaseDate: map['purchaseDate'],
       purchasePrice: map['purchasePrice'],
       photoPath: map['photoPath'],
+      notes: map['notes'],
+      deviceType: map['deviceType'] ?? "NEW",
+      status: map['status'] ?? "AVAILABLE",
+      soldTo: map['soldTo'],
+      soldMobile: map['soldMobile'],
+      sellingPrice: map['sellingPrice'],
+      soldDate: map['soldDate'],
     );
   }
 }
