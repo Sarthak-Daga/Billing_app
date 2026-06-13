@@ -138,6 +138,8 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
 
       dateController.text = widget.customer!['purchaseDate'];
 
+      notesController.text = widget.customer!['notes'] ?? '';
+
       if (widget.customer!['photoPath'] != null &&
           widget.customer!['photoPath'].toString().isNotEmpty) {
         selectedImage = File(widget.customer!['photoPath']);
@@ -162,6 +164,7 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
     imeiController.dispose();
     priceController.dispose();
     dateController.dispose();
+    notesController.dispose();
 
     super.dispose();
   }
@@ -428,6 +431,20 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
                       'purchasePrice': priceController.text,
 
                       'photoPath': savedImagePath ?? '',
+
+                      'notes': notesController.text,
+
+                      'deviceType': 'OLD',
+
+                      'status': 'AVAILABLE',
+
+                      'soldTo': '',
+
+                      'soldMobile': '',
+
+                      'sellingPrice': '',
+
+                      'soldDate': '',
                     });
                     Navigator.pop(context, false);
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -451,6 +468,19 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
 
                       'photoPath':
                           savedImagePath ?? widget.customer!['photoPath'],
+                      'notes': notesController.text,
+
+                      'deviceType': 'OLD',
+
+                      'status': widget.customer!['status'] ?? 'AVAILABLE',
+
+                      'soldTo': widget.customer!['soldTo'] ?? '',
+
+                      'soldMobile': widget.customer!['soldMobile'] ?? '',
+
+                      'sellingPrice': widget.customer!['sellingPrice'] ?? '',
+
+                      'soldDate': widget.customer!['soldDate'] ?? '',
                     });
                     Navigator.pop(context, true);
 

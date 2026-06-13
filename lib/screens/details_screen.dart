@@ -119,6 +119,31 @@ class DetailsScreen extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 20),
+
+            _buildSectionCard(
+              title: "Device Status",
+
+              children: [
+                _infoTile(
+                  Icons.category,
+                  "Device Type",
+                  customer['deviceType'],
+                ),
+
+                _infoTile(Icons.inventory, "Status", customer['status']),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+
+            _buildSectionCard(
+              title: "Notes",
+
+              children: [
+                _infoTile(Icons.note_alt, "Condition Notes", customer['notes']),
+              ],
+            ),
 
             const SizedBox(height: 30),
 
