@@ -28,6 +28,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   final TextEditingController dateController = TextEditingController();
   String? savedImagePath;
   File? selectedImage;
+  final TextEditingController notesController = TextEditingController();
 
   Future<void> scanImei() async {
     final result = await Navigator.push(
@@ -136,6 +137,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
 
       dateController.text = widget.customer!['purchaseDate'];
 
+      notesController.text = widget.customer!['notes'] ?? '';
+
       if (widget.customer!['photoPath'] != null &&
           widget.customer!['photoPath'].toString().isNotEmpty) {
         selectedImage = File(widget.customer!['photoPath']);
@@ -160,6 +163,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     imeiController.dispose();
     priceController.dispose();
     dateController.dispose();
+    notesController.dispose();
 
     super.dispose();
   }
@@ -380,6 +384,29 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                 ),
               ],
             ),
+            _buildSectionCard(
+              title: "Condition Notes",
+
+              children: [
+                TextField(
+                  controller: notesController,
+                  maxLines: 4,
+
+                  decoration: InputDecoration(
+                    labelText: "Notes",
+
+                    hintText:
+                        "Defects, repairs, battery health, accessories etc.",
+
+                    prefixIcon: const Icon(Icons.note_alt_outlined),
+
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
 
             const SizedBox(height: 35),
 
@@ -404,6 +431,19 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       'purchasePrice': priceController.text,
 
                       'photoPath': savedImagePath ?? '',
+                      'notes': notesController.text,
+
+                      'deviceType': 'NEW',
+
+                      'status': 'AVAILABLE',
+
+                      'soldTo': '',
+
+                      'soldMobile': '',
+
+                      'sellingPrice': '',
+
+                      'soldDate': '',
                     });
                     Navigator.pop(context, false);
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -427,6 +467,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
 
                       'photoPath':
                           savedImagePath ?? widget.customer!['photoPath'],
+                      'notes': notesController.text,
                     });
                     Navigator.pop(context, true);
 
