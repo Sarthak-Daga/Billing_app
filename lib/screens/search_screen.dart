@@ -146,15 +146,139 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildResultCard(Map<String, dynamic> customer) {
+    final bool isSold = customer['status'] == 'SOLD';
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
 
       child: ListTile(
         leading: const CircleAvatar(child: Icon(Icons.smartphone)),
 
-        title: Text(
-          customer['modelName'],
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                customer['modelName'],
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+
+            IconButton(
+              icon: Icon(
+                isSold ? Icons.check_circle : Icons.sell,
+
+                color: isSold ? Colors.red : Colors.green,
+              ),
+
+              onPressed: isSold
+                  ? null
+                  : () async {
+                      final buyerNameController = TextEditingController();
+
+                      final buyerMobileController = TextEditingController();
+
+                      final sellingPriceController = TextEditingController();
+
+                      final soldDate = DateTime.now();
+
+                      final result = await showDialog<bool>(
+                        context: context,
+
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text("Sell Device"),
+
+                            content: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+
+                                children: [
+                                  TextField(
+                                    controller: buyerNameController,
+
+                                    decoration: const InputDecoration(
+                                      labelText: "Buyer Name",
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 15),
+
+                                  TextField(
+                                    controller: buyerMobileController,
+
+                                    keyboardType: TextInputType.phone,
+
+                                    maxLength: 10,
+
+                                    decoration: const InputDecoration(
+                                      labelText: "Buyer Mobile",
+                                      counterText: "",
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 15),
+
+                                  TextField(
+                                    controller: sellingPriceController,
+
+                                    keyboardType: TextInputType.number,
+
+                                    decoration: const InputDecoration(
+                                      labelText: "Selling Price",
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context, false);
+                                },
+
+                                child: const Text("Cancel"),
+                              ),
+
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context, true);
+                                },
+
+                                child: const Text("Sell"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      if (result != true) return;
+
+                      await DatabaseHelper.instance.updateCustomer({
+                        ...customer,
+
+                        'status': 'SOLD',
+
+                        'soldTo': buyerNameController.text,
+
+                        'soldMobile': buyerMobileController.text,
+
+                        'sellingPrice': sellingPriceController.text,
+
+                        'soldDate':
+                            "${soldDate.day}/${soldDate.month}/${soldDate.year}",
+                      });
+
+                      await loadCustomers();
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Device Sold")),
+                      );
+                    },
+            ),
+          ],
         ),
 
         subtitle: Text(
