@@ -29,6 +29,13 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   String? savedImagePath;
   File? selectedImage;
   final TextEditingController notesController = TextEditingController();
+  bool sellImmediately = false;
+
+  final TextEditingController buyerNameController = TextEditingController();
+
+  final TextEditingController buyerMobileController = TextEditingController();
+
+  final TextEditingController sellingPriceController = TextEditingController();
 
   Future<void> scanImei() async {
     final result = await Navigator.push(
@@ -164,6 +171,9 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     priceController.dispose();
     dateController.dispose();
     notesController.dispose();
+    buyerNameController.dispose();
+    buyerMobileController.dispose();
+    sellingPriceController.dispose();
 
     super.dispose();
   }
@@ -375,7 +385,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                   controller: priceController,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    labelText: "Purchase Price",
+                    labelText: "Listed Price",
                     prefixIcon: const Icon(Icons.currency_rupee),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -408,6 +418,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               ],
             ),
 
+            const SizedBox(height: 20),
+
             const SizedBox(height: 35),
 
             SizedBox(
@@ -435,15 +447,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
 
                       'deviceType': 'NEW',
 
-                      'status': 'AVAILABLE',
-
-                      'soldTo': '',
-
-                      'soldMobile': '',
-
-                      'sellingPrice': '',
-
-                      'soldDate': '',
+                      'status': 'SOLD',
                     });
                     Navigator.pop(context, false);
                     ScaffoldMessenger.of(context).showSnackBar(

@@ -30,7 +30,9 @@ class DetailsScreen extends StatelessWidget {
 
           children: [
             _buildSectionCard(
-              title: "Customer Information",
+              title: customer['deviceType'] == 'OLD'
+                  ? "Seller Information"
+                  : "Customer Information",
 
               children: [
                 _infoTile(
@@ -134,6 +136,32 @@ class DetailsScreen extends StatelessWidget {
                 _infoTile(Icons.inventory, "Status", customer['status']),
               ],
             ),
+            if (customer['deviceType'] == 'OLD' && customer['status'] == 'SOLD')
+              _buildSectionCard(
+                title: "Buyer Information",
+
+                children: [
+                  _infoTile(Icons.person, "Buyer Name", customer['soldTo']),
+
+                  _infoTile(
+                    Icons.phone,
+                    "Buyer Mobile",
+                    customer['soldMobile'],
+                  ),
+
+                  _infoTile(
+                    Icons.currency_rupee,
+                    "Selling Price",
+                    customer['sellingPrice'],
+                  ),
+
+                  _infoTile(
+                    Icons.calendar_today,
+                    "Sold Date",
+                    customer['soldDate'],
+                  ),
+                ],
+              ),
 
             const SizedBox(height: 20),
 

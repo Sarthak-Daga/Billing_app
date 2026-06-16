@@ -26,7 +26,7 @@ class Dashboard extends StatelessWidget {
             const SizedBox(height: 20),
 
             const Text(
-              "Mahadev Telecomms",
+              "Mahadev Telecoms",
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
             ),
 
