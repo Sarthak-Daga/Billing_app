@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/dashboard_screen.dart';
-
-//Temp
 import 'database/database_helper.dart';
 
-//Temp
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
