@@ -29,6 +29,13 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   String? savedImagePath;
   File? selectedImage;
   final TextEditingController notesController = TextEditingController();
+  bool sellImmediately = false;
+
+  final TextEditingController buyerNameController = TextEditingController();
+
+  final TextEditingController buyerMobileController = TextEditingController();
+
+  final TextEditingController sellingPriceController = TextEditingController();
 
   Future<void> scanImei() async {
     final result = await Navigator.push(
@@ -164,6 +171,9 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     priceController.dispose();
     dateController.dispose();
     notesController.dispose();
+    buyerNameController.dispose();
+    buyerMobileController.dispose();
+    sellingPriceController.dispose();
 
     super.dispose();
   }
@@ -375,7 +385,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                   controller: priceController,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    labelText: "Purchase Price",
+                    labelText: "Listed Price",
                     prefixIcon: const Icon(Icons.currency_rupee),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -408,6 +418,78 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               ],
             ),
 
+            const SizedBox(height: 20),
+
+            SwitchListTile(
+              title: const Text(
+                "Sell Immediately",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+
+              subtitle: const Text(
+                "Mark this device as sold while creating the record",
+              ),
+
+              value: sellImmediately,
+
+              onChanged: (value) {
+                setState(() {
+                  sellImmediately = value;
+                });
+              },
+            ),
+
+            if (sellImmediately)
+              _buildSectionCard(
+                title: "Sale Information",
+
+                children: [
+                  TextField(
+                    controller: buyerNameController,
+
+                    decoration: InputDecoration(
+                      labelText: "Buyer Name",
+                      prefixIcon: const Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  TextField(
+                    controller: buyerMobileController,
+                    keyboardType: TextInputType.phone,
+                    maxLength: 10,
+
+                    decoration: InputDecoration(
+                      labelText: "Buyer Mobile",
+                      prefixIcon: const Icon(Icons.phone),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  TextField(
+                    controller: sellingPriceController,
+                    keyboardType: TextInputType.number,
+
+                    decoration: InputDecoration(
+                      labelText: "Selling Price",
+                      prefixIcon: const Icon(Icons.currency_rupee),
+
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
             const SizedBox(height: 35),
 
             SizedBox(
@@ -435,15 +517,19 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
 
                       'deviceType': 'NEW',
 
-                      'status': 'AVAILABLE',
+                      'status': sellImmediately ? 'SOLD' : 'AVAILABLE',
 
-                      'soldTo': '',
+                      'soldTo': sellImmediately ? buyerNameController.text : '',
 
-                      'soldMobile': '',
+                      'soldMobile': sellImmediately
+                          ? buyerMobileController.text
+                          : '',
 
-                      'sellingPrice': '',
+                      'sellingPrice': sellImmediately
+                          ? sellingPriceController.text
+                          : '',
 
-                      'soldDate': '',
+                      'soldDate': sellImmediately ? dateController.text : '',
                     });
                     Navigator.pop(context, false);
                     ScaffoldMessenger.of(context).showSnackBar(
