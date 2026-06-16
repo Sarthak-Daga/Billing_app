@@ -447,19 +447,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
 
                       'deviceType': 'NEW',
 
-                      'status': sellImmediately ? 'SOLD' : 'AVAILABLE',
-
-                      'soldTo': sellImmediately ? buyerNameController.text : '',
-
-                      'soldMobile': sellImmediately
-                          ? buyerMobileController.text
-                          : '',
-
-                      'sellingPrice': sellImmediately
-                          ? sellingPriceController.text
-                          : '',
-
-                      'soldDate': sellImmediately ? dateController.text : '',
+                      'status': 'SOLD',
                     });
                     Navigator.pop(context, false);
                     ScaffoldMessenger.of(context).showSnackBar(
