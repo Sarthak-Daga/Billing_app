@@ -30,6 +30,13 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
   File? selectedImage;
 
   final TextEditingController notesController = TextEditingController();
+  bool sellImmediately = false;
+
+  final TextEditingController buyerNameController = TextEditingController();
+
+  final TextEditingController buyerMobileController = TextEditingController();
+
+  final TextEditingController sellingPriceController = TextEditingController();
 
   Future<void> scanImei() async {
     final result = await Navigator.push(
@@ -165,6 +172,9 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
     priceController.dispose();
     dateController.dispose();
     notesController.dispose();
+    buyerNameController.dispose();
+    buyerMobileController.dispose();
+    sellingPriceController.dispose();
 
     super.dispose();
   }
@@ -407,6 +417,72 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
                 ),
               ],
             ),
+            SwitchListTile(
+              title: const Text("Sell Immediately"),
+
+              value: sellImmediately,
+
+              onChanged: (value) {
+                setState(() {
+                  sellImmediately = value;
+                });
+              },
+            ),
+            if (sellImmediately)
+              _buildSectionCard(
+                title: "Sale Information",
+
+                children: [
+                  TextField(
+                    controller: buyerNameController,
+
+                    decoration: InputDecoration(
+                      labelText: "Buyer Name",
+                      prefixIcon: const Icon(Icons.person),
+
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  TextField(
+                    controller: buyerMobileController,
+
+                    keyboardType: TextInputType.phone,
+
+                    maxLength: 10,
+
+                    decoration: InputDecoration(
+                      labelText: "Buyer Mobile",
+                      prefixIcon: const Icon(Icons.phone),
+
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  TextField(
+                    controller: sellingPriceController,
+
+                    keyboardType: TextInputType.number,
+
+                    decoration: InputDecoration(
+                      labelText: "Selling Price",
+                      prefixIcon: const Icon(Icons.currency_rupee),
+
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
 
             const SizedBox(height: 35),
 
@@ -436,15 +512,18 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
 
                       'deviceType': 'OLD',
 
-                      'status': 'AVAILABLE',
+                      'status': sellImmediately ? 'SOLD' : 'AVAILABLE',
+                      'soldTo': sellImmediately ? buyerNameController.text : '',
 
-                      'soldTo': '',
+                      'soldMobile': sellImmediately
+                          ? buyerMobileController.text
+                          : '',
 
-                      'soldMobile': '',
+                      'sellingPrice': sellImmediately
+                          ? sellingPriceController.text
+                          : '',
 
-                      'sellingPrice': '',
-
-                      'soldDate': '',
+                      'soldDate': sellImmediately ? dateController.text : '',
                     });
                     Navigator.pop(context, false);
                     ScaffoldMessenger.of(context).showSnackBar(
