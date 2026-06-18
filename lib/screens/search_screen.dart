@@ -14,6 +14,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> customers = [];
   List<Map<String, dynamic>> filteredCustomers = [];
+  String selectedFilter = 'ALL';
   bool isLoading = true;
 
   @override
@@ -21,6 +22,30 @@ class _SearchScreenState extends State<SearchScreen> {
     super.initState();
 
     loadCustomers();
+  }
+
+  void applyFilters(String query) {
+    List<Map<String, dynamic>> results = customers;
+
+    if (selectedFilter == 'AVAILABLE') {
+      results = results.where((c) => c['status'] == 'AVAILABLE').toList();
+    }
+
+    if (query.isNotEmpty) {
+      results = results.where((customer) {
+        return customer['customer_name'].toString().toLowerCase().contains(
+              query.toLowerCase(),
+            ) ||
+            customer['model_name'].toString().toLowerCase().contains(
+              query.toLowerCase(),
+            ) ||
+            customer['mobile_number'].toString().contains(query);
+      }).toList();
+    }
+
+    setState(() {
+      filteredCustomers = results;
+    });
   }
 
   void searchRecords(String query) {
@@ -123,6 +148,42 @@ class _SearchScreenState extends State<SearchScreen> {
                   borderSide: BorderSide.none,
                 ),
               ),
+            ),
+
+            const SizedBox(height: 10),
+
+            Row(
+              children: [
+                Radio<String>(
+                  value: 'ALL',
+                  groupValue: selectedFilter,
+
+                  onChanged: (value) {
+                    setState(() {
+                      selectedFilter = value!;
+                    });
+
+                    applyFilters(searchController.text);
+                  },
+                ),
+
+                const Text("All"),
+
+                Radio<String>(
+                  value: 'AVAILABLE',
+                  groupValue: selectedFilter,
+
+                  onChanged: (value) {
+                    setState(() {
+                      selectedFilter = value!;
+                    });
+
+                    applyFilters(searchController.text);
+                  },
+                ),
+
+                const Text("Available"),
+              ],
             ),
 
             const SizedBox(height: 25),
@@ -265,21 +326,15 @@ class _SearchScreenState extends State<SearchScreen> {
                         },
                       );
                       if (result != true) return;
+                      await SupabaseService.sellDevice(
+                        id: customer['id'],
 
-                      await DatabaseHelper.instance.updateCustomer({
-                        ...customer,
+                        buyerName: buyerNameController.text.trim(),
 
-                        'status': 'SOLD',
+                        buyerMobile: buyerMobileController.text.trim(),
 
-                        'soldTo': buyerNameController.text,
-
-                        'soldMobile': buyerMobileController.text,
-
-                        'sellingPrice': sellingPriceController.text,
-
-                        'soldDate':
-                            "${soldDate.day}/${soldDate.month}/${soldDate.year}",
-                      });
+                        sellingPrice: sellingPriceController.text.trim(),
+                      );
 
                       await loadCustomers();
 

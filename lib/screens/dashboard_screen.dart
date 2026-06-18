@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:billing_app/screens/add_record_screen.dart';
 import 'package:billing_app/screens/search_screen.dart';
 import 'package:billing_app/screens/buy_old_device_screen.dart';
-
+import '../services/supabase_service.dart';
 import '../database/database_helper.dart';
 
 class Dashboard extends StatefulWidget {
@@ -26,7 +26,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> loadStats() async {
-    final customers = await DatabaseHelper.instance.getAllCustomers();
+    final customers = await SupabaseService.getCustomers();
 
     setState(() {
       totalDevices = customers.length;
@@ -37,8 +37,9 @@ class _DashboardState extends State<Dashboard> {
           .where((c) => c['status'] == 'AVAILABLE')
           .length;
 
-      oldDevices = customers.where((c) => c['deviceType'] == 'OLD').length;
-      newDevices = customers.where((c) => c['deviceType'] == 'NEW').length;
+      oldDevices = customers.where((c) => c['device_type'] == 'OLD').length;
+
+      newDevices = customers.where((c) => c['device_type'] == 'NEW').length;
     });
   }
 

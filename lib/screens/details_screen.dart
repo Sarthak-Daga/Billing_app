@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../database/database_helper.dart';
+import '../services/supabase_service.dart';
 import 'add_record_screen.dart';
 import 'package:billing_app/screens/full_image_screen.dart';
 
@@ -241,9 +242,7 @@ class DetailsScreen extends StatelessWidget {
                   );
 
                   if (shouldDelete == true) {
-                    await DatabaseHelper.instance.deleteCustomer(
-                      customer['id'],
-                    );
+                    await SupabaseService.deleteCustomer(customer['id']);
 
                     Navigator.pop(context, true);
 

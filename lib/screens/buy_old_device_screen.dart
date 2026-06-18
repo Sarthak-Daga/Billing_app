@@ -4,6 +4,7 @@ import '../database/database_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/image_service.dart';
 import 'package:billing_app/screens/imei_scanner_screen.dart';
+import '../services/supabase_service.dart';
 
 class BuyOldDeviceScreen extends StatefulWidget {
   final Map<String, dynamic>? customer;
@@ -493,39 +494,45 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
               child: ElevatedButton(
                 onPressed: () async {
                   if (widget.customer == null) {
-                    await DatabaseHelper.instance.insertCustomer({
-                      'customerName': customerNameController.text,
+                    await SupabaseService.addCustomer({
+                      'customer_name': customerNameController.text.trim(),
 
-                      'mobileNumber': mobileController.text,
+                      'mobile_number': mobileController.text.trim(),
 
-                      'modelName': modelController.text,
+                      'model_name': modelController.text.trim(),
 
-                      'imei': imeiController.text,
+                      'imei': imeiController.text.trim(),
 
-                      'purchaseDate': dateController.text,
+                      'purchase_date': dateController.text.trim(),
 
-                      'purchasePrice': priceController.text,
+                      'purchase_price': priceController.text.trim(),
 
-                      'photoPath': savedImagePath ?? '',
+                      'notes': notesController.text.trim(),
 
-                      'notes': notesController.text,
-
-                      'deviceType': 'OLD',
+                      'device_type': 'OLD',
 
                       'status': sellImmediately ? 'SOLD' : 'AVAILABLE',
-                      'soldTo': sellImmediately ? buyerNameController.text : '',
 
-                      'soldMobile': sellImmediately
-                          ? buyerMobileController.text
-                          : '',
+                      'sold_to': sellImmediately
+                          ? buyerNameController.text.trim()
+                          : null,
 
-                      'sellingPrice': sellImmediately
-                          ? sellingPriceController.text
-                          : '',
+                      'sold_mobile': sellImmediately
+                          ? buyerMobileController.text.trim()
+                          : null,
 
-                      'soldDate': sellImmediately ? dateController.text : '',
+                      'selling_price': sellImmediately
+                          ? sellingPriceController.text.trim()
+                          : null,
+
+                      'sold_date': sellImmediately
+                          ? DateTime.now().toString()
+                          : null,
+
+                      'image_url': null,
                     });
-                    Navigator.pop(context, false);
+                    print("Old device inserted into Supabase");
+                    Navigator.pop(context, true);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Record Saved")),
                     );

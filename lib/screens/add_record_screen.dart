@@ -133,17 +133,17 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   void initState() {
     super.initState();
     if (widget.customer != null) {
-      customerNameController.text = widget.customer!['customerName'];
+      customerNameController.text = widget.customer!['customer_name'];
 
-      mobileController.text = widget.customer!['mobileNumber'];
+      mobileController.text = widget.customer!['mobile_number'];
 
-      modelController.text = widget.customer!['modelName'];
+      modelController.text = widget.customer!['model_name'];
 
       imeiController.text = widget.customer!['imei'];
 
-      priceController.text = widget.customer!['purchasePrice'];
+      priceController.text = widget.customer!['purchase_price'];
 
-      dateController.text = widget.customer!['purchaseDate'];
+      dateController.text = widget.customer!['purchase_date'];
 
       notesController.text = widget.customer!['notes'] ?? '';
 
@@ -431,22 +431,22 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                 onPressed: () async {
                   if (widget.customer == null) {
                     // await DatabaseHelper.instance.insertCustomer({
-                    //   'customerName': customerNameController.text,
+                    //   'customer_name': customerNameController.text,
                     //
-                    //   'mobileNumber': mobileController.text,
+                    //   'mobile_number': mobileController.text,
                     //
-                    //   'modelName': modelController.text,
+                    //   'model_name': modelController.text,
                     //
                     //   'imei': imeiController.text,
                     //
-                    //   'purchaseDate': dateController.text,
+                    //   'purchase_date': dateController.text,
                     //
-                    //   'purchasePrice': priceController.text,
+                    //   'purchase_price': priceController.text,
                     //
                     //   'photoPath': savedImagePath ?? '',
                     //   'notes': notesController.text,
                     //
-                    //   'deviceType': 'NEW',
+                    //   'device_type': 'NEW',
                     //
                     //   'status': 'SOLD',
                     // });
@@ -468,7 +468,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
 
                       'device_type': 'NEW',
 
-                      'status': sellImmediately ? 'SOLD' : 'AVAILABLE',
+                      'status': 'SOLD',
 
                       'sold_to': sellImmediately
                           ? buyerNameController.text.trim()
@@ -495,30 +495,27 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     );
                     Navigator.pop(context, false);
                   } else {
-                    await DatabaseHelper.instance.updateCustomer({
-                      'id': widget.customer!['id'],
+                    await SupabaseService.updateCustomer(
+                      id: widget.customer!['id'],
 
-                      'customerName': customerNameController.text,
+                      data: {
+                        'customer_name': customerNameController.text.trim(),
 
-                      'mobileNumber': mobileController.text,
+                        'mobile_number': mobileController.text.trim(),
 
-                      'modelName': modelController.text,
+                        'model_name': modelController.text.trim(),
 
-                      'imei': imeiController.text,
+                        'imei': imeiController.text.trim(),
 
-                      'purchaseDate': dateController.text,
+                        'purchase_date': dateController.text.trim(),
 
-                      'purchasePrice': priceController.text,
+                        'purchase_price': priceController.text.trim(),
 
-                      'photoPath':
-                          savedImagePath ?? widget.customer!['photoPath'],
-                      'notes': notesController.text,
-                    });
-                    Navigator.pop(context, true);
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Record Updated")),
+                        'notes': notesController.text.trim(),
+                      },
                     );
+
+                    Navigator.pop(context, true);
                   }
                 },
 
