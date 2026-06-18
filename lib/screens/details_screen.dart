@@ -30,7 +30,7 @@ class DetailsScreen extends StatelessWidget {
 
           children: [
             _buildSectionCard(
-              title: customer['deviceType'] == 'OLD'
+              title: customer['device_type'] == 'OLD'
                   ? "Seller Information"
                   : "Customer Information",
 
@@ -38,13 +38,13 @@ class DetailsScreen extends StatelessWidget {
                 _infoTile(
                   Icons.person,
                   "Customer Name",
-                  customer['customerName'],
+                  customer['customer_name'],
                 ),
 
                 _infoTile(
                   Icons.phone,
                   "Mobile Number",
-                  customer['mobileNumber'],
+                  customer['mobile_number'],
                 ),
               ],
             ),
@@ -95,7 +95,7 @@ class DetailsScreen extends StatelessWidget {
                 _infoTile(
                   Icons.smartphone,
                   "Model Name",
-                  customer['modelName'],
+                  customer['model_name'],
                 ),
 
                 _infoTile(Icons.numbers, "IMEI Number", customer['imei']),
@@ -111,13 +111,13 @@ class DetailsScreen extends StatelessWidget {
                 _infoTile(
                   Icons.calendar_today,
                   "Purchase Date",
-                  customer['purchaseDate'],
+                  customer['purchase_date'],
                 ),
 
                 _infoTile(
                   Icons.currency_rupee,
                   "Purchase Price",
-                  customer['purchasePrice'],
+                  customer['purchase_price'],
                 ),
               ],
             ),
@@ -130,35 +130,36 @@ class DetailsScreen extends StatelessWidget {
                 _infoTile(
                   Icons.category,
                   "Device Type",
-                  customer['deviceType'],
+                  customer['device_type'],
                 ),
 
                 _infoTile(Icons.inventory, "Status", customer['status']),
               ],
             ),
-            if (customer['deviceType'] == 'OLD' && customer['status'] == 'SOLD')
+            if (customer['device_type'] == 'OLD' &&
+                customer['status'] == 'SOLD')
               _buildSectionCard(
                 title: "Buyer Information",
 
                 children: [
-                  _infoTile(Icons.person, "Buyer Name", customer['soldTo']),
+                  _infoTile(Icons.person, "Buyer Name", customer['sold_to']),
 
                   _infoTile(
                     Icons.phone,
                     "Buyer Mobile",
-                    customer['soldMobile'],
+                    customer['sold_mobile'],
                   ),
 
                   _infoTile(
                     Icons.currency_rupee,
                     "Selling Price",
-                    customer['sellingPrice'],
+                    customer['selling_price'],
                   ),
 
                   _infoTile(
                     Icons.calendar_today,
                     "Sold Date",
-                    customer['soldDate'],
+                    customer['sold_date'],
                   ),
                 ],
               ),

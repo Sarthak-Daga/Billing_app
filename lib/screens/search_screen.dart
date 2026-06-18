@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../database/database_helper.dart';
 import 'details_screen.dart';
+import '../services/supabase_service.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -32,11 +33,11 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     final results = customers.where((customer) {
-      final customerName = customer['customerName'].toString().toLowerCase();
+      final customerName = customer['customer_name'].toString().toLowerCase();
 
-      final modelName = customer['modelName'].toString().toLowerCase();
+      final modelName = customer['model_name'].toString().toLowerCase();
 
-      final mobileNumber = customer['mobileNumber'].toString().toLowerCase();
+      final mobileNumber = customer['mobile_number'].toString().toLowerCase();
 
       final imei = customer['imei'].toString().toLowerCase();
 
@@ -53,8 +54,17 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  // Future<void> loadCustomers() async {
+  //   final data = await DatabaseHelper.instance.getAllCustomers();
+  //
+  //   setState(() {
+  //     customers = data;
+  //     filteredCustomers = data;
+  //     isLoading = false;
+  //   });
+  // }
   Future<void> loadCustomers() async {
-    final data = await DatabaseHelper.instance.getAllCustomers();
+    final data = await SupabaseService.getCustomers();
 
     setState(() {
       customers = data;
@@ -158,7 +168,7 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             Expanded(
               child: Text(
-                customer['modelName'],
+                customer['model_name'],
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -282,8 +292,8 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
 
         subtitle: Text(
-          "👤 ${customer['customerName']}\n"
-          "📞 +91 ${customer['mobileNumber']}\n"
+          "👤 ${customer['customer_name']}\n"
+          "📞 +91 ${customer['mobile_number']}\n"
           "🔢 ${customer['imei']}",
         ),
 

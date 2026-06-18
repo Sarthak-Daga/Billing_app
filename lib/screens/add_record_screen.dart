@@ -4,6 +4,7 @@ import '../database/database_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/image_service.dart';
 import 'package:billing_app/screens/imei_scanner_screen.dart';
+import '../services/supabase_service.dart';
 
 class AddRecordScreen extends StatefulWidget {
   final Map<String, dynamic>? customer;
@@ -429,30 +430,70 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               child: ElevatedButton(
                 onPressed: () async {
                   if (widget.customer == null) {
-                    await DatabaseHelper.instance.insertCustomer({
-                      'customerName': customerNameController.text,
+                    // await DatabaseHelper.instance.insertCustomer({
+                    //   'customerName': customerNameController.text,
+                    //
+                    //   'mobileNumber': mobileController.text,
+                    //
+                    //   'modelName': modelController.text,
+                    //
+                    //   'imei': imeiController.text,
+                    //
+                    //   'purchaseDate': dateController.text,
+                    //
+                    //   'purchasePrice': priceController.text,
+                    //
+                    //   'photoPath': savedImagePath ?? '',
+                    //   'notes': notesController.text,
+                    //
+                    //   'deviceType': 'NEW',
+                    //
+                    //   'status': 'SOLD',
+                    // });
 
-                      'mobileNumber': mobileController.text,
+                    await SupabaseService.addCustomer({
+                      'customer_name': customerNameController.text.trim(),
 
-                      'modelName': modelController.text,
+                      'mobile_number': mobileController.text.trim(),
 
-                      'imei': imeiController.text,
+                      'model_name': modelController.text.trim(),
 
-                      'purchaseDate': dateController.text,
+                      'imei': imeiController.text.trim(),
 
-                      'purchasePrice': priceController.text,
+                      'purchase_date': dateController.text.trim(),
 
-                      'photoPath': savedImagePath ?? '',
-                      'notes': notesController.text,
+                      'purchase_price': priceController.text.trim(),
 
-                      'deviceType': 'NEW',
+                      'notes': notesController.text.trim(),
 
-                      'status': 'SOLD',
+                      'device_type': 'NEW',
+
+                      'status': sellImmediately ? 'SOLD' : 'AVAILABLE',
+
+                      'sold_to': sellImmediately
+                          ? buyerNameController.text.trim()
+                          : null,
+
+                      'sold_mobile': sellImmediately
+                          ? buyerMobileController.text.trim()
+                          : null,
+
+                      'selling_price': sellImmediately
+                          ? sellingPriceController.text.trim()
+                          : null,
+
+                      'sold_date': sellImmediately
+                          ? DateTime.now().toString()
+                          : null,
+
+                      'image_url': null,
                     });
-                    Navigator.pop(context, false);
+                    print("Inserted into Supabase");
+
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Record Saved")),
                     );
+                    Navigator.pop(context, false);
                   } else {
                     await DatabaseHelper.instance.updateCustomer({
                       'id': widget.customer!['id'],
