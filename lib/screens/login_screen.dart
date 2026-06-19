@@ -15,14 +15,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool loading = false;
 
-  @override
-  void initState() {
-    super.initState();
-
-    emailController.text = "gamingdarkwarrior21@gmail.com";
-    passwordController.text = "123456";
-  }
-
   Future<void> signUp() async {
     try {
       setState(() => loading = true);
