@@ -12,7 +12,6 @@ void main() async {
     url: dotenv.env['PROJECT_URL']!,
     anonKey: dotenv.env['PUBLISHABLE_KEY']!,
   );
-  print("Supabase Connected!");
 
   runApp(const MahadevTelecoms());
 }

@@ -435,15 +435,11 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                   if (widget.customer == null) {
                     String? imageUrl;
 
-                    print("savedImagePath before upload: $savedImagePath");
-
                     if (savedImagePath != null) {
                       imageUrl = await SupabaseService.uploadImage(
                         File(savedImagePath!),
                       );
                     }
-
-                    print("Returned imageUrl: $imageUrl");
 
                     await SupabaseService.addCustomer({
                       'customer_name': customerNameController.text.trim(),
@@ -482,7 +478,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
 
                       'image_url': imageUrl,
                     });
-                    print("Inserted into Supabase");
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Record Saved")),

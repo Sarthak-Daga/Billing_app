@@ -540,7 +540,6 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
 
                       'image_url': imageUrl,
                     });
-                    print("Old device inserted into Supabase");
                     Navigator.pop(context, true);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Record Saved")),
