@@ -241,6 +241,10 @@ class DetailsScreen extends StatelessWidget {
                   );
 
                   if (shouldDelete == true) {
+                    if (customer['image_url'] != null &&
+                        customer['image_url'].toString().isNotEmpty) {
+                      await SupabaseService.deleteImage(customer['image_url']);
+                    }
                     await SupabaseService.deleteCustomer(customer['id']);
 
                     Navigator.pop(context, true);

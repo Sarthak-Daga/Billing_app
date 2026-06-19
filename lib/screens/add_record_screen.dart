@@ -493,6 +493,11 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
 
                     if (savedImagePath != null &&
                         !savedImagePath!.startsWith('http')) {
+                      if (existingImageUrl != null &&
+                          existingImageUrl!.isNotEmpty) {
+                        await SupabaseService.deleteImage(existingImageUrl!);
+                      }
+
                       imageUrl = await SupabaseService.uploadImage(
                         File(savedImagePath!),
                       );

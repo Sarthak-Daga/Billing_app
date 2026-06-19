@@ -72,4 +72,21 @@ class SupabaseService {
       return null;
     }
   }
+
+  static Future<void> deleteImage(String imageUrl) async {
+    try {
+      final uri = Uri.parse(imageUrl);
+
+      final fileName = uri.pathSegments.last;
+
+      final result = await supabase.storage.from('device-images').remove([
+        fileName,
+      ]);
+
+      print("Delete result: $result");
+      print("Deleted image: $fileName");
+    } catch (e) {
+      print("Delete image error: $e");
+    }
+  }
 }
