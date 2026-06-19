@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../database/database_helper.dart';
 import '../services/supabase_service.dart';
 import 'add_record_screen.dart';
 import 'package:billing_app/screens/full_image_screen.dart';
@@ -51,7 +50,7 @@ class DetailsScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 20),
-            if (customer['photoPath'] != null && customer['photoPath'] != '')
+            if (customer['image_url'] != null && customer['image_url'] != '')
               Card(
                 elevation: 2,
 
@@ -71,13 +70,13 @@ class DetailsScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => FullImageScreen(
-                              imagePath: customer['photoPath'],
+                              imagePath: customer['image_url'],
                             ),
                           ),
                         );
                       },
-                      child: Image.file(
-                        File(customer['photoPath']),
+                      child: Image.network(
+                        customer['image_url'],
                         height: 250,
                         width: double.infinity,
                         fit: BoxFit.cover,

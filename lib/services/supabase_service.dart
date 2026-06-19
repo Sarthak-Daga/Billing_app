@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:io';
 
 class SupabaseService {
   static final supabase = Supabase.instance.client;
@@ -53,5 +54,22 @@ class SupabaseService {
 
   static Future<void> deleteCustomer(int id) async {
     await supabase.from('customers').delete().eq('id', id);
+  }
+
+  static Future<String?> uploadImage(File imageFile) async {
+    try {
+      final fileName = "${DateTime.now().millisecondsSinceEpoch}.jpg";
+
+      await supabase.storage.from('device-images').upload(fileName, imageFile);
+
+      final imageUrl = supabase.storage
+          .from('device-images')
+          .getPublicUrl(fileName);
+
+      return imageUrl;
+    } catch (e) {
+      print(e);
+      return null;
+    }
   }
 }

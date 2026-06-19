@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../database/database_helper.dart';
 import 'details_screen.dart';
 import '../services/supabase_service.dart';
 

@@ -3,7 +3,6 @@ import 'package:billing_app/screens/add_record_screen.dart';
 import 'package:billing_app/screens/search_screen.dart';
 import 'package:billing_app/screens/buy_old_device_screen.dart';
 import '../services/supabase_service.dart';
-import '../database/database_helper.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});

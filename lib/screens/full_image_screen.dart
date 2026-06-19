@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 
 class FullImageScreen extends StatelessWidget {
@@ -21,7 +20,14 @@ class FullImageScreen extends StatelessWidget {
           minScale: 0.5,
           maxScale: 4.0,
 
-          child: Image.file(File(imagePath)),
+          child: Image.network(
+            imagePath,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+
+              return const Center(child: CircularProgressIndicator());
+            },
+          ),
         ),
       ),
     );

@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../database/database_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/image_service.dart';
 import 'package:billing_app/screens/imei_scanner_screen.dart';
@@ -29,6 +28,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   final TextEditingController dateController = TextEditingController();
   String? savedImagePath;
   File? selectedImage;
+  String? existingImageUrl;
   final TextEditingController notesController = TextEditingController();
   bool sellImmediately = false;
 
@@ -147,11 +147,9 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
 
       notesController.text = widget.customer!['notes'] ?? '';
 
-      if (widget.customer!['photoPath'] != null &&
-          widget.customer!['photoPath'].toString().isNotEmpty) {
-        selectedImage = File(widget.customer!['photoPath']);
-
-        savedImagePath = widget.customer!['photoPath'];
+      if (widget.customer!['image_url'] != null &&
+          widget.customer!['image_url'].toString().isNotEmpty) {
+        existingImageUrl = widget.customer!['image_url'];
       }
     } else {
       final now = DateTime.now();
@@ -258,7 +256,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       ),
                     ),
 
-                    child: selectedImage == null
+                    child: selectedImage == null && existingImageUrl == null
                         ? const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -269,12 +267,17 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                           )
                         : ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.file(
-                              selectedImage!,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                            ),
+                            child: selectedImage != null
+                                ? Image.file(
+                                    selectedImage!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                  )
+                                : Image.network(
+                                    existingImageUrl!,
+                                    fit: BoxFit.cover,
+                                  ),
                           ),
                   ),
                 ),
@@ -430,26 +433,17 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               child: ElevatedButton(
                 onPressed: () async {
                   if (widget.customer == null) {
-                    // await DatabaseHelper.instance.insertCustomer({
-                    //   'customer_name': customerNameController.text,
-                    //
-                    //   'mobile_number': mobileController.text,
-                    //
-                    //   'model_name': modelController.text,
-                    //
-                    //   'imei': imeiController.text,
-                    //
-                    //   'purchase_date': dateController.text,
-                    //
-                    //   'purchase_price': priceController.text,
-                    //
-                    //   'photoPath': savedImagePath ?? '',
-                    //   'notes': notesController.text,
-                    //
-                    //   'device_type': 'NEW',
-                    //
-                    //   'status': 'SOLD',
-                    // });
+                    String? imageUrl;
+
+                    print("savedImagePath before upload: $savedImagePath");
+
+                    if (savedImagePath != null) {
+                      imageUrl = await SupabaseService.uploadImage(
+                        File(savedImagePath!),
+                      );
+                    }
+
+                    print("Returned imageUrl: $imageUrl");
 
                     await SupabaseService.addCustomer({
                       'customer_name': customerNameController.text.trim(),
@@ -486,15 +480,23 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                           ? DateTime.now().toString()
                           : null,
 
-                      'image_url': null,
+                      'image_url': imageUrl,
                     });
                     print("Inserted into Supabase");
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Record Saved")),
                     );
-                    Navigator.pop(context, false);
+                    Navigator.pop(context, true);
                   } else {
+                    String? imageUrl = existingImageUrl;
+
+                    if (savedImagePath != null &&
+                        !savedImagePath!.startsWith('http')) {
+                      imageUrl = await SupabaseService.uploadImage(
+                        File(savedImagePath!),
+                      );
+                    }
                     await SupabaseService.updateCustomer(
                       id: widget.customer!['id'],
 
@@ -512,6 +514,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                         'purchase_price': priceController.text.trim(),
 
                         'notes': notesController.text.trim(),
+                        'image_url': imageUrl,
                       },
                     );
 

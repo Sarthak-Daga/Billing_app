@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../database/database_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/image_service.dart';
 import 'package:billing_app/screens/imei_scanner_screen.dart';
@@ -29,7 +28,7 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
   final TextEditingController dateController = TextEditingController();
   String? savedImagePath;
   File? selectedImage;
-
+  String? existingImageUrl;
   final TextEditingController notesController = TextEditingController();
   bool sellImmediately = false;
 
@@ -134,25 +133,23 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
   void initState() {
     super.initState();
     if (widget.customer != null) {
-      customerNameController.text = widget.customer!['customerName'];
+      customerNameController.text = widget.customer!['customer_name'];
 
-      mobileController.text = widget.customer!['mobileNumber'];
+      mobileController.text = widget.customer!['mobile_number'];
 
-      modelController.text = widget.customer!['modelName'];
+      modelController.text = widget.customer!['model_name'];
 
       imeiController.text = widget.customer!['imei'];
 
-      priceController.text = widget.customer!['purchasePrice'];
+      priceController.text = widget.customer!['purchase_price'];
 
-      dateController.text = widget.customer!['purchaseDate'];
+      dateController.text = widget.customer!['purchase_date'];
 
       notesController.text = widget.customer!['notes'] ?? '';
 
-      if (widget.customer!['photoPath'] != null &&
-          widget.customer!['photoPath'].toString().isNotEmpty) {
-        selectedImage = File(widget.customer!['photoPath']);
-
-        savedImagePath = widget.customer!['photoPath'];
+      if (widget.customer!['image_url'] != null &&
+          widget.customer!['image_url'].toString().isNotEmpty) {
+        existingImageUrl = widget.customer!['image_url'];
       }
     } else {
       final now = DateTime.now();
@@ -259,7 +256,7 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
                       ),
                     ),
 
-                    child: selectedImage == null
+                    child: selectedImage == null && existingImageUrl == null
                         ? const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -270,12 +267,17 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
                           )
                         : ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.file(
-                              selectedImage!,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                            ),
+                            child: selectedImage != null
+                                ? Image.file(
+                                    selectedImage!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                  )
+                                : Image.network(
+                                    existingImageUrl!,
+                                    fit: BoxFit.cover,
+                                  ),
                           ),
                   ),
                 ),
@@ -494,6 +496,13 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
               child: ElevatedButton(
                 onPressed: () async {
                   if (widget.customer == null) {
+                    String? imageUrl;
+
+                    if (savedImagePath != null) {
+                      imageUrl = await SupabaseService.uploadImage(
+                        File(savedImagePath!),
+                      );
+                    }
                     await SupabaseService.addCustomer({
                       'customer_name': customerNameController.text.trim(),
 
@@ -529,7 +538,7 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
                           ? DateTime.now().toString()
                           : null,
 
-                      'image_url': null,
+                      'image_url': imageUrl,
                     });
                     print("Old device inserted into Supabase");
                     Navigator.pop(context, true);
@@ -537,37 +546,46 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
                       const SnackBar(content: Text("Record Saved")),
                     );
                   } else {
-                    await DatabaseHelper.instance.updateCustomer({
-                      'id': widget.customer!['id'],
+                    String? imageUrl = existingImageUrl;
 
-                      'customerName': customerNameController.text,
+                    if (savedImagePath != null &&
+                        !savedImagePath!.startsWith('http')) {
+                      imageUrl = await SupabaseService.uploadImage(
+                        File(savedImagePath!),
+                      );
+                    }
+                    await SupabaseService.updateCustomer(
+                      id: widget.customer!['id'],
 
-                      'mobileNumber': mobileController.text,
+                      data: {
+                        'customer_name': customerNameController.text.trim(),
 
-                      'modelName': modelController.text,
+                        'mobile_number': mobileController.text.trim(),
 
-                      'imei': imeiController.text,
+                        'model_name': modelController.text.trim(),
 
-                      'purchaseDate': dateController.text,
+                        'imei': imeiController.text.trim(),
 
-                      'purchasePrice': priceController.text,
+                        'purchase_date': dateController.text.trim(),
 
-                      'photoPath':
-                          savedImagePath ?? widget.customer!['photoPath'],
-                      'notes': notesController.text,
+                        'purchase_price': priceController.text.trim(),
 
-                      'deviceType': 'OLD',
+                        'notes': notesController.text.trim(),
 
-                      'status': widget.customer!['status'] ?? 'AVAILABLE',
+                        'device_type': 'OLD',
 
-                      'soldTo': widget.customer!['soldTo'] ?? '',
+                        'status': widget.customer!['status'],
 
-                      'soldMobile': widget.customer!['soldMobile'] ?? '',
+                        'sold_to': widget.customer!['sold_to'],
 
-                      'sellingPrice': widget.customer!['sellingPrice'] ?? '',
+                        'sold_mobile': widget.customer!['sold_mobile'],
 
-                      'soldDate': widget.customer!['soldDate'] ?? '',
-                    });
+                        'selling_price': widget.customer!['selling_price'],
+
+                        'sold_date': widget.customer!['sold_date'],
+                        'image_url': imageUrl,
+                      },
+                    );
                     Navigator.pop(context, true);
 
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -585,7 +603,7 @@ class _BuyOldDeviceScreenState extends State<BuyOldDeviceScreen> {
                 ),
 
                 child: Text(
-                  "Buy Device",
+                  widget.customer == null ? "BUY DEVICE" : "UPDATE RECORD",
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.white,
